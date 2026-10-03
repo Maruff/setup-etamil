@@ -1,0 +1,33 @@
+name: Test the action
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  install:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: setup
+        uses: ./
+      - name: It runs and the library resolves
+        shell: bash
+        run: |
+          etamil --version
+          test "$(etamil --version)" = "etamil ${{ steps.setup.outputs.version }}"
+          test -d "$ETAMIL_PATH/nUlakam"
+
+  pinned:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: setup
+        uses: ./
+        with:
+          version: "1.4.2"
+      - run: test "${{ steps.setup.outputs.version }}" = "1.4.2"

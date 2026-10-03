@@ -1,0 +1,36 @@
+name: Setup eTamil
+description: Install the eTamil compiler on the runner and optionally check .qmz files.
+author: Mohammed Maruff (Esan Maruff)
+branding:
+  icon: code
+  color: orange
+
+inputs:
+  version:
+    description: eTamil version to install, such as 1.4.2, or "latest".
+    default: latest
+  check:
+    description: >
+      Optional glob of .qmz files to check with `etamil --check` (for example
+      "src/**/*.qmz"). The step fails if any file has an error. Nothing is run.
+    default: ""
+
+outputs:
+  version:
+    description: The version that was installed.
+    value: ${{ steps.install.outputs.version }}
+
+runs:
+  using: composite
+  steps:
+    - id: install
+      shell: bash
+      run: bash "${{ github.action_path }}/install.sh"
+      env:
+        INPUT_VERSION: ${{ inputs.version }}
+
+    - if: inputs.check != ''
+      shell: bash
+      run: bash "${{ github.action_path }}/check.sh"
+      env:
+        INPUT_CHECK: ${{ inputs.check }}
