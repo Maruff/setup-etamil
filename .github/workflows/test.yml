@@ -19,7 +19,8 @@ jobs:
         shell: bash
         run: |
           etamil --version
-          test "$(etamil --version)" = "etamil ${{ steps.setup.outputs.version }}"
+          # --version prints a licence notice after the first line.
+          test "$(etamil --version | head -n 1)" = "etamil ${{ steps.setup.outputs.version }}"
           test -d "$ETAMIL_PATH/nUlakam"
 
   pinned:
